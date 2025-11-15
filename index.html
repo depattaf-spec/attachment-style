@@ -201,8 +201,6 @@
             font-size: 1.125rem;
             line-height: 1.6;
             font-weight: 500;
-            position: relative;
-            overflow: hidden;
         }
 
         .option:hover {
@@ -406,7 +404,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Welcome Screen -->
         <div id="welcomeScreen" class="screen active">
             <div class="welcome-screen">
                 <div class="title-container">
@@ -427,7 +424,7 @@
                     </p>
                 </div>
                 
-                <button class="btn-primary" onclick="startQuiz()">
+                <button class="btn-primary" id="startBtn">
                     <span>Begin Assessment</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="9 18 15 12 9 6"></polyline>
@@ -436,7 +433,6 @@
             </div>
         </div>
 
-        <!-- Quiz Screen -->
         <div id="quizScreen" class="screen">
             <div class="progress-container">
                 <div class="progress-bars" id="progressBars"></div>
@@ -451,13 +447,12 @@
                 
                 <div class="options-container" id="optionsContainer"></div>
 
-                <button class="btn-next" id="nextBtn" onclick="handleNext()" disabled>
+                <button class="btn-next" id="nextBtn" disabled>
                     Next
                 </button>
             </div>
         </div>
 
-        <!-- Results Screen -->
         <div id="resultsScreen" class="screen"></div>
     </div>
 
@@ -733,28 +728,40 @@
         let selectedOptions = [];
         let answers = [];
         
-        var creatures = ['🐉', '🦄', '🦋', '🐲', '🦅', '🦊', '🦉', '🐺', '🦁', '🐯', '🦚', '🐝', '🦢', '🐠', '🦜'];
+        const creatures = ['🐉', '🦄', '🦋', '🐲', '🦅', '🦊', '🦉', '🐺', '🦁', '🐯', '🦚', '🐝', '🦢', '🐠', '🦜'];
 
         function createCreature(element) {
-            var creature = document.createElement('div');
+            const creature = document.createElement('div');
             creature.className = 'creature';
-            var randomCreature = creatures[Math.floor(Math.random() * creatures.length)];
+            const randomCreature = creatures[Math.floor(Math.random() * creatures.length)];
             creature.textContent = randomCreature;
             
-            // Get position of clicked element
-            var rect = element.getBoundingClientRect();
+            const rect = element.getBoundingClientRect();
             creature.style.left = (rect.left + rect.width / 2 - 32) + 'px';
             creature.style.top = (rect.top + rect.height / 2 - 32) + 'px';
             
-            // Append to body instead of the element
             document.body.appendChild(creature);
             
-            setTimeout(function() {
+            setTimeout(() => {
                 if (creature && creature.parentNode) {
                     document.body.removeChild(creature);
                 }
             }, 2000);
         }
+
+        const icons = {
+            secure: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+            anxious: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+            avoidant: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
+            fearful: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>'
+        };
+
+        const smallIcons = {
+            secure: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+            anxious: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+            avoidant: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
+            fearful: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>'
+        };
 
         function startQuiz() {
             document.getElementById('welcomeScreen').classList.remove('active');
@@ -767,7 +774,6 @@
             document.getElementById('questionText').textContent = question.text;
             document.getElementById('progressText').textContent = `${currentQuestion + 1}/${questions.length}`;
             
-            // Render progress bars
             const progressBars = document.getElementById('progressBars');
             progressBars.innerHTML = '';
             questions.forEach((_, index) => {
@@ -778,7 +784,6 @@
                 progressBars.appendChild(bar);
             });
 
-            // Render options
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
             question.options.forEach((option, index) => {
@@ -803,6 +808,7 @@
             } else {
                 selectedOptions.push(index);
                 optionElements[index].classList.add('selected');
+                createCreature(optionElements[index]);
             }
             
             updateNextButton();
@@ -864,20 +870,6 @@
         function renderResults(percentages, primary, secondary) {
             const resultsScreen = document.getElementById('resultsScreen');
             
-            const icons = {
-                secure: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
-                anxious: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
-                avoidant: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
-                fearful: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>'
-            };
-
-            const smallIcons = {
-                secure: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
-                anxious: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
-                avoidant: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
-                fearful: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>'
-            };
-
             let html = `
                 <div class="results-header">
                     <h2 class="results-title">Your Attachment Profile</h2>
@@ -890,20 +882,20 @@
             `;
 
             Object.keys(percentages).sort((a, b) => percentages[b] - percentages[a]).forEach(style => {
-                html += '<div class="percentage-item">' +
-                    '<div class="percentage-header">' +
-                        '<div class="percentage-label">' +
-                            '<div class="icon-badge" style="background: ' + attachmentStyles[style].color + '">' +
-                                smallIcons[style] +
-                            '</div>' +
-                            '<span style="font-weight: 600">' + attachmentStyles[style].title + '</span>' +
-                        '</div>' +
-                        '<span style="font-weight: bold; font-size: 1.25rem">' + percentages[style] + '%</span>' +
-                    '</div>' +
-                    '<div class="percentage-bar-bg">' +
-                        '<div class="percentage-bar-fill" style="background: ' + attachmentStyles[style].color + '; width: ' + percentages[style] + '%"></div>' +
-                    '</div>' +
-                '</div>';
+                html += `<div class="percentage-item">
+                    <div class="percentage-header">
+                        <div class="percentage-label">
+                            <div class="icon-badge" style="background: ${attachmentStyles[style].color}">
+                                ${smallIcons[style]}
+                            </div>
+                            <span style="font-weight: 600">${attachmentStyles[style].title}</span>
+                        </div>
+                        <span style="font-weight: bold; font-size: 1.25rem">${percentages[style]}%</span>
+                    </div>
+                    <div class="percentage-bar-bg">
+                        <div class="percentage-bar-fill" style="background: ${attachmentStyles[style].color}; width: ${percentages[style]}%"></div>
+                    </div>
+                </div>`;
             });
 
             html += `
@@ -989,7 +981,7 @@
                 </div>
 
                 <div style="text-align: center">
-                    <button class="btn-primary" onclick="restartQuiz()">
+                    <button class="btn-primary" id="restartBtn">
                         <span>Take Assessment Again</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="9 18 15 12 9 6"></polyline>
@@ -999,6 +991,7 @@
             `;
 
             resultsScreen.innerHTML = html;
+            document.getElementById('restartBtn').addEventListener('click', restartQuiz);
         }
 
         function restartQuiz() {
@@ -1009,6 +1002,9 @@
             document.getElementById('resultsScreen').classList.remove('active');
             document.getElementById('welcomeScreen').classList.add('active');
         }
+
+        document.getElementById('startBtn').addEventListener('click', startQuiz);
+        document.getElementById('nextBtn').addEventListener('click', handleNext);
     </script>
 </body>
 </html>
