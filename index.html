@@ -738,18 +738,22 @@
         var creatures = ['🐉', '🦄', '🦋', '🐲', '🦅', '🦊', '🦉', '🐺', '🦁', '🐯', '🦚', '🐝', '🦢', '🐠', '🦜'];
 
         function createCreature(element) {
-            const creature = document.createElement('div');
+            var creature = document.createElement('div');
             creature.className = 'creature';
             creature.textContent = creatures[Math.floor(Math.random() * creatures.length)];
             
-            const rect = element.getBoundingClientRect();
-            creature.style.left = Math.random() * rect.width + 'px';
+            var rect = element.getBoundingClientRect();
+            var randomX = Math.random() * (rect.width - 40);
+            creature.style.left = randomX + 'px';
             creature.style.top = '50%';
+            creature.style.position = 'absolute';
             
             element.appendChild(creature);
             
             setTimeout(function() {
-                creature.remove();
+                if (creature && creature.parentNode) {
+                    creature.parentNode.removeChild(creature);
+                }
             }, 2000);
         }
 
@@ -782,7 +786,8 @@
                 const optionDiv = document.createElement('div');
                 optionDiv.className = 'option';
                 optionDiv.textContent = option.text;
-                optionDiv.onclick = () => toggleOption(index);
+                optionDiv.setAttribute('data-index', index);
+                optionDiv.onclick = function() { toggleOption(index); };
                 optionsContainer.appendChild(optionDiv);
             });
 
