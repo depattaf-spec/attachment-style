@@ -734,6 +734,24 @@
         let currentQuestion = 0;
         let selectedOptions = [];
         let answers = [];
+        
+        var creatures = ['🐉', '🦄', '🦋', '🐲', '🦅', '🦊', '🦉', '🐺', '🦁', '🐯', '🦚', '🐝', '🦢', '🐠', '🦜'];
+
+        function createCreature(element) {
+            const creature = document.createElement('div');
+            creature.className = 'creature';
+            creature.textContent = creatures[Math.floor(Math.random() * creatures.length)];
+            
+            const rect = element.getBoundingClientRect();
+            creature.style.left = Math.random() * rect.width + 'px';
+            creature.style.top = '50%';
+            
+            element.appendChild(creature);
+            
+            setTimeout(function() {
+                creature.remove();
+            }, 2000);
+        }
 
         function startQuiz() {
             document.getElementById('welcomeScreen').classList.remove('active');
