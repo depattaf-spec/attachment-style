@@ -219,23 +219,27 @@
 
         .creature {
             position: absolute;
-            font-size: 2rem;
-            opacity: 0;
+            font-size: 3rem;
+            opacity: 1;
             animation: float-up 2s ease-out forwards;
             pointer-events: none;
+            z-index: 100;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
 
         @keyframes float-up {
             0% {
-                opacity: 0;
-                transform: translateY(0) scale(0.5) rotate(0deg);
+                opacity: 1;
+                transform: translate(-50%, -50%) translateY(0) scale(0.5) rotate(0deg);
             }
             20% {
                 opacity: 1;
             }
             100% {
                 opacity: 0;
-                transform: translateY(-100px) scale(1.2) rotate(360deg);
+                transform: translate(-50%, -50%) translateY(-150px) scale(1.5) rotate(360deg);
             }
         }
 
@@ -740,21 +744,18 @@
         function createCreature(element) {
             var creature = document.createElement('div');
             creature.className = 'creature';
-            creature.textContent = creatures[Math.floor(Math.random() * creatures.length)];
-            
-            var rect = element.getBoundingClientRect();
-            var randomX = Math.random() * (rect.width - 40);
-            creature.style.left = randomX + 'px';
-            creature.style.top = '50%';
+            var randomCreature = creatures[Math.floor(Math.random() * creatures.length)];
+            creature.innerHTML = randomCreature;
             creature.style.position = 'absolute';
             
+            element.style.position = 'relative';
             element.appendChild(creature);
             
             setTimeout(function() {
                 if (creature && creature.parentNode) {
                     creature.parentNode.removeChild(creature);
                 }
-            }, 2000);
+            }, 2100);
         }
 
         function startQuiz() {
