@@ -218,28 +218,22 @@
         }
 
         .creature {
-            position: absolute;
-            font-size: 3rem;
+            position: fixed;
+            font-size: 4rem;
             opacity: 1;
             animation: float-up 2s ease-out forwards;
             pointer-events: none;
-            z-index: 100;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            z-index: 99999;
         }
 
         @keyframes float-up {
             0% {
                 opacity: 1;
-                transform: translate(-50%, -50%) translateY(0) scale(0.5) rotate(0deg);
-            }
-            20% {
-                opacity: 1;
+                transform: translateY(0) scale(1) rotate(0deg);
             }
             100% {
                 opacity: 0;
-                transform: translate(-50%, -50%) translateY(-150px) scale(1.5) rotate(360deg);
+                transform: translateY(-200px) scale(2) rotate(360deg);
             }
         }
 
@@ -745,17 +739,21 @@
             var creature = document.createElement('div');
             creature.className = 'creature';
             var randomCreature = creatures[Math.floor(Math.random() * creatures.length)];
-            creature.innerHTML = randomCreature;
-            creature.style.position = 'absolute';
+            creature.textContent = randomCreature;
             
-            element.style.position = 'relative';
-            element.appendChild(creature);
+            // Get position of clicked element
+            var rect = element.getBoundingClientRect();
+            creature.style.left = (rect.left + rect.width / 2 - 32) + 'px';
+            creature.style.top = (rect.top + rect.height / 2 - 32) + 'px';
+            
+            // Append to body instead of the element
+            document.body.appendChild(creature);
             
             setTimeout(function() {
                 if (creature && creature.parentNode) {
-                    creature.parentNode.removeChild(creature);
+                    document.body.removeChild(creature);
                 }
-            }, 2100);
+            }, 2000);
         }
 
         function startQuiz() {
