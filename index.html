@@ -201,6 +201,8 @@
             font-size: 1.125rem;
             line-height: 1.6;
             font-weight: 500;
+            position: relative;
+            overflow: hidden;
         }
 
         .option:hover {
@@ -213,6 +215,28 @@
             border: 2px solid rgba(255, 255, 255, 0.5);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
             transform: scale(1.02);
+        }
+
+        .creature {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0;
+            animation: float-up 2s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5) rotate(0deg);
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.2) rotate(360deg);
+            }
         }
 
         .btn-next {
