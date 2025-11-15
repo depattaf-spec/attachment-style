@@ -1,694 +1,968 @@
-import React, { useState } from 'react';
-import { ChevronRight, Heart, Zap, Shield, Users } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attachment Style Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-const AttachmentStyleQuiz = () => {
-  const [currentScreen, setCurrentScreen] = useState('welcome');
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  const [answers, setAnswers] = useState([]);
-  const [result, setResult] = useState(null);
-  const [isAnimating, setIsAnimating] = useState(false);
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to bottom right, #312e81, #581c87, #9d174d);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            color: white;
+        }
 
-  const questions = [
-    {
-      text: "When someone I care about doesn't respond to my messages for a while, I...",
-      multiSelect: true,
-      options: [
-        { text: "Assume they're busy and will get back when they can", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
-        { text: "Start worrying about what I might have done wrong", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-        { text: "Don't really think much about it", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
-        { text: "Feel anxious but try to distract myself", score: { secure: 0, anxious: 2, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "In a relationship, I find myself...",
-      multiSelect: true,
-      options: [
-        { text: "Comfortable being both close and independent", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Wanting constant reassurance of their feelings", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "Needing significant personal space", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "Wanting closeness but pulling away when I get it", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "When I need emotional support, I typically...",
-      multiSelect: true,
-      options: [
-        { text: "Reach out to trusted people without hesitation", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-        { text: "Seek support but worry I'm being too needy", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-        { text: "Prefer to handle things on my own", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "Want help but struggle to ask for it", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
-      ]
-    },
-    {
-      text: "My view on being vulnerable with a partner is...",
-      multiSelect: true,
-      options: [
-        { text: "It's essential for building intimacy", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-        { text: "I'm very open, sometimes too much too soon", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "I prefer to keep certain things private", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
-        { text: "I want to be open but it feels terrifying", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "When conflict arises with someone close to me, I...",
-      multiSelect: true,
-      options: [
-        { text: "Address it directly but calmly", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Get very upset and need to resolve it immediately", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "Withdraw and need space before discussing", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "Shut down emotionally and don't know what to do", score: { secure: 0, anxious: 0, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "I trust new people in my life...",
-      multiSelect: true,
-      options: [
-        { text: "Gradually, as I get to know them better", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
-        { text: "Quickly, maybe sometimes too quickly", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "Slowly, I'm naturally cautious", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 2 } },
-        { text: "I struggle to trust even when I want to", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "When a partner needs space, I...",
-      multiSelect: true,
-      options: [
-        { text: "Respect it and trust they'll reconnect when ready", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
-        { text: "Feel anxious and want to know why", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-        { text: "Feel relieved and enjoy my own space", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
-        { text: "Feel rejected and withdraw myself", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
-      ]
-    },
-    {
-      text: "Looking at my past relationships, I notice...",
-      multiSelect: true,
-      options: [
-        { text: "A pattern of healthy, mutual communication", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "I often felt more invested than my partners", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "I tended to prioritize my independence", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
-        { text: "A confusing push-pull dynamic", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "My comfort level with physical and emotional intimacy is...",
-      multiSelect: true,
-      options: [
-        { text: "Comfortable with both in the right relationship", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-        { text: "I crave it and sometimes fear losing it", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-        { text: "I need my own space even in close relationships", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "I desire it but it makes me uncomfortable", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "When I feel rejected or criticized, I tend to...",
-      multiSelect: true,
-      options: [
-        { text: "Process it and communicate how I feel", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Take it very personally and feel deeply hurt", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-        { text: "Brush it off and focus on other things", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
-        { text: "Feel hurt but hide it and distance myself", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
-      ]
-    },
-    {
-      text: "In terms of expressing my needs in relationships, I...",
-      multiSelect: true,
-      options: [
-        { text: "Feel comfortable stating what I need clearly", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-        { text: "Express them but worry about being too demanding", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "Prefer to meet my own needs independently", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "Have needs but struggle to voice them", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "When someone gets too close emotionally, I...",
-      multiSelect: true,
-      options: [
-        { text: "Welcome the closeness if it feels mutual", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-        { text: "Feel happy and more connected", score: { secure: 2, anxious: 3, avoidant: 0, fearful: 0 } },
-        { text: "Start to feel smothered and need distance", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "Want it but feel the urge to push away", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "My beliefs about depending on others are...",
-      multiSelect: true,
-      options: [
-        { text: "Healthy interdependence strengthens relationships", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-        { text: "I rely heavily on close relationships for support", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "I believe in being self-sufficient", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "I want to depend on others but don't trust it", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "When thinking about commitment in relationships, I...",
-      multiSelect: true,
-      options: [
-        { text: "Feel ready when I've found the right person", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Commit quickly when I feel a strong connection", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "Feel hesitant and value my freedom", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "Want it but fear being trapped or hurt", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "After a breakup, I typically...",
-      multiSelect: true,
-      options: [
-        { text: "Grieve, learn, and eventually move forward", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Struggle intensely and reach out repeatedly", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "Move on relatively quickly and easily", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
-        { text: "Feel devastated but pretend I'm fine", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
-      ]
-    },
-    {
-      text: "My approach to resolving misunderstandings is...",
-      multiSelect: true,
-      options: [
-        { text: "Talk it through openly and find solutions", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Need to talk immediately, can't rest until resolved", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "Give it time and space before addressing", score: { secure: 2, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "Avoid the conversation altogether", score: { secure: 0, anxious: 0, avoidant: 2, fearful: 3 } }
-      ]
-    },
-    {
-      text: "When I'm in a secure, stable relationship, I...",
-      multiSelect: true,
-      options: [
-        { text: "Feel content and appreciative", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Still sometimes worry it won't last", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-        { text: "Start feeling like I need more space", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "Wait for something to go wrong", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "My communication style in relationships is...",
-      multiSelect: true,
-      options: [
-        { text: "Direct, honest, and respectful", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Very expressive, sometimes overwhelming", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "Reserved and selective about what I share", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
-        { text: "Inconsistent - sometimes open, sometimes shut down", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "When I think about my childhood relationships with caregivers, I...",
-      multiSelect: true,
-      options: [
-        { text: "Felt consistently loved and supported", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Felt anxious about whether I was loved enough", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "Learned to be independent early on", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "Experienced inconsistency or fear", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "My biggest fear in close relationships is...",
-      multiSelect: true,
-      options: [
-        { text: "I don't have a major fear, just normal concerns", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Being abandoned or not being enough", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-        { text: "Losing my independence or sense of self", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "Both intimacy and abandonment simultaneously", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "When a partner shares deep emotions with me, I...",
-      multiSelect: true,
-      options: [
-        { text: "Feel honored and respond with empathy", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-        { text: "Feel very connected and reciprocate deeply", score: { secure: 2, anxious: 3, avoidant: 0, fearful: 0 } },
-        { text: "Feel a bit uncomfortable and unsure how to respond", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
-        { text: "Want to be supportive but feel overwhelmed", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "My pattern of seeking or avoiding closeness is...",
-      multiSelect: true,
-      options: [
-        { text: "Balanced - I seek closeness when it feels right", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "I actively seek closeness and connection", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 0 } },
-        { text: "I generally avoid too much closeness", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "I alternate between seeking and avoiding it", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    },
-    {
-      text: "When I imagine my ideal relationship, it involves...",
-      multiSelect: true,
-      options: [
-        { text: "Mutual respect, trust, and balanced intimacy", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Deep emotional fusion and constant connection", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "Companionship but maintaining separateness", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
-        { text: "Safety and closeness without fear", score: { secure: 2, anxious: 1, avoidant: 0, fearful: 3 } }
-      ]
-    },
-    {
-      text: "My self-worth in relationships is...",
-      multiSelect: true,
-      options: [
-        { text: "Stable and doesn't depend heavily on my partner", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
-        { text: "Often influenced by how my partner treats me", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-        { text: "Independent of relationships - I validate myself", score: { secure: 2, anxious: 0, avoidant: 3, fearful: 0 } },
-        { text: "Fragile and I struggle with self-doubt", score: { secure: 0, anxious: 2, avoidant: 0, fearful: 3 } }
-      ]
-    },
-    {
-      text: "When someone shows genuine interest in me, I...",
-      multiSelect: true,
-      options: [
-        { text: "Appreciate it and reciprocate appropriately", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-        { text: "Feel excited and get very invested quickly", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-        { text: "Feel skeptical or maintain emotional distance", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
-        { text: "Feel both drawn to them and want to run away", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-      ]
-    }
-  ];
+        .container {
+            max-width: 672px;
+            width: 100%;
+        }
 
-  const attachmentStyles = {
-    secure: {
-      title: "Secure Attachment",
-      icon: <Heart className="w-12 h-12" />,
-      color: "from-emerald-400 to-teal-600",
-      description: "You have a healthy, balanced approach to relationships with comfort in both intimacy and independence.",
-      traits: ["Emotionally available", "Good boundaries", "Comfortable with intimacy", "Effective communicator", "Trusts easily", "Self-aware"],
-      strengths: "Your secure attachment allows you to form deep, meaningful connections while maintaining your sense of self. You navigate conflicts constructively and trust comes naturally.",
-      growth: "Continue nurturing your relationships with open communication. Your stability can help partners with insecure attachment patterns feel safer.",
-      percentage: "50-60% of adults"
-    },
-    anxious: {
-      title: "Anxious-Preoccupied",
-      icon: <Zap className="w-12 h-12" />,
-      color: "from-amber-400 to-orange-600",
-      description: "You deeply value close relationships and may sometimes worry about your partner's feelings or availability.",
-      traits: ["Highly empathetic", "Values closeness", "Intuitive", "Passionate", "Loyal", "Emotionally expressive"],
-      strengths: "Your capacity for deep emotional connection and attunement to others' feelings is a gift. You invest fully in relationships and aren't afraid to show you care.",
-      growth: "Practice self-soothing and building self-worth independent of relationships. Mindfulness and therapy can help manage relationship anxiety while preserving your wonderful sensitivity.",
-      percentage: "20% of adults"
-    },
-    avoidant: {
-      title: "Dismissive-Avoidant",
-      icon: <Shield className="w-12 h-12" />,
-      color: "from-blue-400 to-indigo-600",
-      description: "You value independence and self-reliance, preferring to maintain some emotional distance even in close relationships.",
-      traits: ["Self-reliant", "Independent", "Strong boundaries", "Logical", "Self-sufficient", "Resilient"],
-      strengths: "Your independence and self-sufficiency are valuable traits. You maintain your identity in relationships and don't lose yourself in others.",
-      growth: "Challenge yourself to practice vulnerability in small doses with trusted people. Recognizing that needing others isn't weakness can deepen your connections without threatening your autonomy.",
-      percentage: "25% of adults"
-    },
-    fearful: {
-      title: "Fearful-Avoidant",
-      icon: <Users className="w-12 h-12" />,
-      color: "from-purple-400 to-pink-600",
-      description: "You experience both a desire for intimacy and fear of it, creating an internal push-pull dynamic in relationships.",
-      traits: ["Deeply introspective", "Highly perceptive", "Complex", "Resilient", "Self-aware", "Empathetic"],
-      strengths: "Your awareness of the complexity of relationships gives you deep insight into human connection. You see multiple perspectives and understand nuance.",
-      growth: "Therapy, especially focusing on trauma or early attachment wounds, can be transformative. Practice self-compassion and gradual vulnerability with safe people. Your healing journey can lead to profound growth.",
-      percentage: "5-10% of adults"
-    }
-  };
+        .screen {
+            display: none;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.5s ease;
+        }
 
-  const calculateResult = () => {
-    const scores = { secure: 0, anxious: 0, avoidant: 0, fearful: 0 };
-    let totalPoints = 0;
-    
-    answers.forEach(answerSet => {
-      answerSet.forEach(answer => {
-        Object.keys(scores).forEach(style => {
-          scores[style] += answer.score[style];
-          totalPoints += answer.score[style];
-        });
-      });
-    });
+        .screen.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
 
-    // Calculate percentages
-    const percentages = {};
-    Object.keys(scores).forEach(style => {
-      percentages[style] = totalPoints > 0 ? Math.round((scores[style] / totalPoints) * 100) : 0;
-    });
+        .welcome-screen {
+            text-align: center;
+        }
 
-    // Sort styles by score
-    const sortedStyles = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
-    
-    // Determine primary and secondary styles
-    const primary = sortedStyles[0];
-    const secondary = percentages[sortedStyles[1]] >= 20 ? sortedStyles[1] : null;
+        .title-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
 
-    return {
-      percentages,
-      primary,
-      secondary,
-      scores
-    };
-  };
+        .title-glow {
+            position: absolute;
+            inset: 0;
+            filter: blur(60px);
+            background: linear-gradient(to right, #ec4899, #8b5cf6);
+            opacity: 0.3;
+            border-radius: 50%;
+        }
 
-  const toggleOption = (index) => {
-    if (selectedOptions.includes(index)) {
-      setSelectedOptions(selectedOptions.filter(i => i !== index));
-    } else {
-      setSelectedOptions([...selectedOptions, index]);
-    }
-  };
+        h1 {
+            position: relative;
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
 
-  const handleNext = () => {
-    if (selectedOptions.length === 0) return;
-    
-    setIsAnimating(true);
-    const selectedAnswers = selectedOptions.map(i => questions[currentQuestion].options[i]);
-    const newAnswers = [...answers, selectedAnswers];
-    setAnswers(newAnswers);
-    setSelectedOptions([]);
+        .gradient-text {
+            display: block;
+            background: linear-gradient(to right, #f9a8d4, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-    setTimeout(() => {
-      if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-      } else {
-        const results = calculateResult();
-        setResult(results);
-        setCurrentScreen('result');
-      }
-      setIsAnimating(false);
-    }, 300);
-  };
+        .subtitle {
+            font-size: 1.25rem;
+            color: white;
+            line-height: 1.75;
+            margin: 0 auto 2rem;
+            max-width: 28rem;
+            padding: 0 1rem;
+        }
 
-  const restart = () => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      setCurrentScreen('welcome');
-      setCurrentQuestion(0);
-      setSelectedOptions([]);
-      setAnswers([]);
-      setResult(null);
-      setIsAnimating(false);
-    }, 300);
-  };
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            max-width: 28rem;
+            margin: 0 auto 2rem;
+        }
 
-  const startQuiz = () => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      setCurrentScreen('quiz');
-      setIsAnimating(false);
-    }, 300);
-  };
+        .info-box p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
 
-  const textStyle = {
-    color: 'rgb(255, 255, 255)',
-    WebkitTextFillColor: 'rgb(255, 255, 255)',
-    opacity: 1,
-    textDecoration: 'none'
-  };
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 1.125rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-  const buttonTextStyle = {
-    ...textStyle,
-    fontSize: '18px',
-    lineHeight: '1.6',
-    fontWeight: '500',
-    display: 'block',
-    width: '100%'
-  };
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
 
-  return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #312e81, #581c87, #9d174d)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-      <div style={{ maxWidth: '672px', width: '100%' }}>
-        <div className={`transition-all duration-500 transform ${isAnimating ? 'scale-95 opacity-0' : 'scale-100 opacity-100'}`}>
-          {currentScreen === 'welcome' && (
-            <div className="text-center space-y-8">
-              <div className="relative">
-                <div className="absolute inset-0 blur-3xl bg-gradient-to-r from-pink-500 to-violet-600 opacity-30 rounded-full"></div>
-                <h1 className="relative text-5xl sm:text-6xl font-bold text-white mb-4 tracking-tight">
-                  Discover Your
-                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-violet-400">
-                    Attachment Style
-                  </span>
-                </h1>
-              </div>
-              
-              <p className="text-lg sm:text-xl text-white max-w-md mx-auto leading-relaxed px-4">
-                A comprehensive 25-question assessment based on attachment theory research
-              </p>
-              
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 max-w-md mx-auto">
-                <p className="text-white/90 text-sm leading-relaxed">
-                  Most people have a mix of attachment patterns. This assessment will show you your complete profile across all four styles, not just one label.
-                </p>
-              </div>
-              
-              <button
-                onClick={startQuiz}
-                className="group relative inline-flex items-center gap-3 bg-white/10 backdrop-blur-md text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-2xl shadow-lg"
-              >
-                <span>Begin Assessment</span>
-                <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 opacity-0 group-hover:opacity-20 transition-opacity blur-xl"></div>
-              </button>
-            </div>
-          )}
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
 
-          {currentScreen === 'quiz' && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex gap-1 flex-1 mr-4">
-                  {questions.map((_, index) => (
-                    <div
-                      key={index}
-                      className={`h-2 flex-1 rounded-full transition-all duration-500 ${
-                        index < currentQuestion
-                          ? 'bg-gradient-to-r from-pink-400 to-violet-400'
-                          : index === currentQuestion
-                          ? 'bg-white/50'
-                          : 'bg-white/20'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-white text-sm font-medium whitespace-nowrap">
-                  {currentQuestion + 1}/{questions.length}
-                </span>
-              </div>
+        .progress-bars {
+            display: flex;
+            gap: 0.25rem;
+            flex: 1;
+            margin-right: 1rem;
+        }
 
-              <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl">
-                <div className="mb-6">
-                  <h2 className="text-xl sm:text-2xl font-bold mb-3 leading-relaxed" style={textStyle}>
-                    {questions[currentQuestion].text}
-                  </h2>
-                  <p className="text-sm" style={{...textStyle, color: 'rgb(224, 224, 224)', WebkitTextFillColor: 'rgb(224, 224, 224)'}}>
-                    Select all that apply
-                  </p>
+        .progress-bar {
+            height: 8px;
+            flex: 1;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .progress-bar.completed {
+            background: linear-gradient(to right, #f9a8d4, #c4b5fd);
+        }
+
+        .progress-bar.current {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .progress-text {
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .question-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+            color: rgb(255, 255, 255);
+        }
+
+        .question-hint {
+            font-size: 0.875rem;
+            color: rgb(224, 224, 224);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .option {
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            color: rgb(255, 255, 255);
+            font-size: 1.125rem;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .option.selected {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            transform: scale(1.02);
+        }
+
+        .btn-next {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 1rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgb(255, 255, 255);
+        }
+
+        .btn-next:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-next:not(:disabled) {
+            background: linear-gradient(to right, #ec4899, #8b5cf6);
+        }
+
+        .btn-next:not(:disabled):hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .results-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .results-subtitle {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 40rem;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+        }
+
+        .result-card h3 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+
+        .percentage-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .percentage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .percentage-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .icon-badge {
+            padding: 0.5rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-badge svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .percentage-bar-bg {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .percentage-bar-fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 1s ease;
+        }
+
+        .primary-style-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .primary-icon {
+            padding: 1rem;
+            border-radius: 9999px;
+        }
+
+        .primary-icon svg {
+            width: 48px;
+            height: 48px;
+        }
+
+        .traits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .trait-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .section p {
+            line-height: 1.75;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .question-text {
+                font-size: 1.25rem;
+            }
+
+            .results-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="screen active">
+            <div class="welcome-screen">
+                <div class="title-container">
+                    <div class="title-glow"></div>
+                    <h1>
+                        Discover Your
+                        <span class="gradient-text">Attachment Style</span>
+                    </h1>
                 </div>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {questions[currentQuestion].options.map((option, index) => (
-                    <div
-                      key={index}
-                      onClick={() => toggleOption(index)}
-                      role="button"
-                      tabIndex={0}
-                      style={{
-                        cursor: 'pointer',
-                        width: '100%',
-                        textAlign: 'left',
-                        padding: '24px',
-                        borderRadius: '16px',
-                        border: selectedOptions.includes(index) ? '2px solid rgba(255, 255, 255, 0.5)' : '1px solid rgba(255, 255, 255, 0.1)',
-                        background: selectedOptions.includes(index) ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                        boxShadow: selectedOptions.includes(index) ? '0 10px 25px rgba(0, 0, 0, 0.3)' : 'none',
-                        transform: selectedOptions.includes(index) ? 'scale(1.02)' : 'scale(1)',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!selectedOptions.includes(index)) {
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!selectedOptions.includes(index)) {
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                        }
-                      }}
-                    >
-                      <p style={buttonTextStyle}>
-                        {option.text}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  onClick={handleNext}
-                  disabled={selectedOptions.length === 0}
-                  style={{
-                    marginTop: '24px',
-                    width: '100%',
-                    padding: '16px',
-                    borderRadius: '16px',
-                    fontWeight: '600',
-                    fontSize: '18px',
-                    cursor: selectedOptions.length === 0 ? 'not-allowed' : 'pointer',
-                    background: selectedOptions.length === 0 ? 'rgba(255, 255, 255, 0.1)' : 'linear-gradient(to right, #ec4899, #8b5cf6)',
-                    color: 'rgb(255, 255, 255)',
-                    border: 'none',
-                    transition: 'all 0.3s ease',
-                    opacity: selectedOptions.length === 0 ? 0.5 : 1
-                  }}
-                  onMouseEnter={(e) => {
-                    if (selectedOptions.length > 0) {
-                      e.currentTarget.style.transform = 'scale(1.02)';
-                      e.currentTarget.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.5)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  {currentQuestion < questions.length - 1 ? 'Next' : 'See Results'}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {currentScreen === 'result' && result && (
-            <div className="space-y-6 sm:space-y-8">
-              <div className="text-center">
-                <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
-                  Your Attachment Profile
-                </h2>
-                <p className="text-lg text-white/80 max-w-lg mx-auto px-4 mb-8">
-                  Most people have mixed patterns. Here's your complete breakdown:
+                <p class="subtitle">
+                    A comprehensive 25-question assessment based on attachment theory research
                 </p>
-              </div>
-
-              {/* Percentage Breakdown */}
-              <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl">
-                <h3 className="text-2xl font-bold text-white mb-6">Your Attachment Breakdown</h3>
-                <div className="space-y-4">
-                  {Object.keys(result.percentages)
-                    .sort((a, b) => result.percentages[b] - result.percentages[a])
-                    .map((style) => (
-                      <div key={style}>
-                        <div className="flex justify-between items-center mb-2">
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-full bg-gradient-to-br ${attachmentStyles[style].color} text-white`}>
-                              {React.cloneElement(attachmentStyles[style].icon, { className: 'w-6 h-6' })}
-                            </div>
-                            <span className="text-white font-semibold">{attachmentStyles[style].title}</span>
-                          </div>
-                          <span className="text-white font-bold text-xl">{result.percentages[style]}%</span>
-                        </div>
-                        <div className="w-full bg-white/10 rounded-full h-3">
-                          <div
-                            className={`h-3 rounded-full bg-gradient-to-r ${attachmentStyles[style].color} transition-all duration-1000`}
-                            style={{ width: `${result.percentages[style]}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-
-              {/* Primary Style */}
-              <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className={`p-4 rounded-full bg-gradient-to-br ${attachmentStyles[result.primary].color} text-white`}>
-                    {attachmentStyles[result.primary].icon}
-                  </div>
-                  <div>
-                    <p className="text-white/70 text-sm">Primary Style</p>
-                    <h3 className="text-3xl font-bold text-white">{attachmentStyles[result.primary].title}</h3>
-                    <p className="text-white/60 text-sm mt-1">{attachmentStyles[result.primary].percentage}</p>
-                  </div>
+                
+                <div class="info-box">
+                    <p>
+                        Most people have a mix of attachment patterns. This assessment will show you your complete profile across all four styles, not just one label.
+                    </p>
                 </div>
                 
-                <p className="text-white leading-relaxed mb-6">
-                  {attachmentStyles[result.primary].description}
-                </p>
-
-                <div className="mb-6">
-                  <h4 className="text-xl font-semibold text-white mb-3">Your Strengths</h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {attachmentStyles[result.primary].traits.map((trait, index) => (
-                      <div
-                        key={index}
-                        className="bg-white/10 rounded-lg p-3 text-white text-center text-sm"
-                      >
-                        {trait}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h4 className="text-xl font-semibold text-white mb-3">What This Means</h4>
-                  <p className="text-white/90 leading-relaxed">
-                    {attachmentStyles[result.primary].strengths}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-xl font-semibold text-white mb-3">Growth Opportunities</h4>
-                  <p className="text-white/90 leading-relaxed">
-                    {attachmentStyles[result.primary].growth}
-                  </p>
-                </div>
-              </div>
-
-              {/* Secondary Style if significant */}
-              {result.secondary && (
-                <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className={`p-4 rounded-full bg-gradient-to-br ${attachmentStyles[result.secondary].color} text-white`}>
-                      {attachmentStyles[result.secondary].icon}
-                    </div>
-                    <div>
-                      <p className="text-white/70 text-sm">Secondary Tendency</p>
-                      <h3 className="text-2xl font-bold text-white">{attachmentStyles[result.secondary].title}</h3>
-                    </div>
-                  </div>
-                  
-                  <p className="text-white/90 leading-relaxed mb-4">
-                    You also show tendencies toward {attachmentStyles[result.secondary].title.toLowerCase()}. {attachmentStyles[result.secondary].description}
-                  </p>
-
-                  <p className="text-white/80 leading-relaxed">
-                    {attachmentStyles[result.secondary].growth}
-                  </p>
-                </div>
-              )}
-
-              {/* Understanding Mixed Patterns */}
-              <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl">
-                <h3 className="text-2xl font-bold text-white mb-4">Understanding Your Profile</h3>
-                <div className="space-y-3 text-white/90 leading-relaxed">
-                  <p>
-                    <strong className="text-white">It's normal to have mixed patterns.</strong> Attachment styles aren't fixed categories—they're patterns that can vary by relationship, context, and personal growth.
-                  </p>
-                  <p>
-                    <strong className="text-white">Your style can change.</strong> With self-awareness, therapy, and secure relationships, people can develop more secure attachment patterns over time.
-                  </p>
-                  <p>
-                    <strong className="text-white">Different relationships, different patterns.</strong> You might be secure with friends but anxious in romantic relationships, or vice versa.
-                  </p>
-                  <p>
-                    <strong className="text-white">This is a starting point.</strong> Use these insights for self-reflection and growth, not as limiting labels. Consider discussing your results with a therapist for deeper exploration.
-                  </p>
-                </div>
-              </div>
-
-              <div className="text-center">
-                <button
-                  onClick={restart}
-                  className="group relative inline-flex items-center gap-3 bg-white/10 backdrop-blur-md text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-2xl shadow-lg"
-                >
-                  <span>Take Assessment Again</span>
-                  <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 opacity-0 group-hover:opacity-20 transition-opacity blur-xl"></div>
+                <button class="btn-primary" onclick="startQuiz()">
+                    <span>Begin Assessment</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
                 </button>
-              </div>
             </div>
-          )}
         </div>
-      </div>
-    </div>
-  );
-};
 
-export default AttachmentStyleQuiz;
+        <!-- Quiz Screen -->
+        <div id="quizScreen" class="screen">
+            <div class="progress-container">
+                <div class="progress-bars" id="progressBars"></div>
+                <span class="progress-text" id="progressText">1/25</span>
+            </div>
+
+            <div class="question-card">
+                <div class="question-header">
+                    <h2 class="question-text" id="questionText"></h2>
+                    <p class="question-hint">Select all that apply</p>
+                </div>
+                
+                <div class="options-container" id="optionsContainer"></div>
+
+                <button class="btn-next" id="nextBtn" onclick="handleNext()" disabled>
+                    Next
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="screen"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: "When someone I care about doesn't respond to my messages for a while, I...",
+                options: [
+                    { text: "Assume they're busy and will get back when they can", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
+                    { text: "Start worrying about what I might have done wrong", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
+                    { text: "Don't really think much about it", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
+                    { text: "Feel anxious but try to distract myself", score: { secure: 0, anxious: 2, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "In a relationship, I find myself...",
+                options: [
+                    { text: "Comfortable being both close and independent", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Wanting constant reassurance of their feelings", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "Needing significant personal space", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "Wanting closeness but pulling away when I get it", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "When I need emotional support, I typically...",
+                options: [
+                    { text: "Reach out to trusted people without hesitation", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
+                    { text: "Seek support but worry I'm being too needy", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
+                    { text: "Prefer to handle things on my own", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "Want help but struggle to ask for it", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
+                ]
+            },
+            {
+                text: "My view on being vulnerable with a partner is...",
+                options: [
+                    { text: "It's essential for building intimacy", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
+                    { text: "I'm very open, sometimes too much too soon", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "I prefer to keep certain things private", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
+                    { text: "I want to be open but it feels terrifying", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "When conflict arises with someone close to me, I...",
+                options: [
+                    { text: "Address it directly but calmly", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Get very upset and need to resolve it immediately", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "Withdraw and need space before discussing", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "Shut down emotionally and don't know what to do", score: { secure: 0, anxious: 0, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "I trust new people in my life...",
+                options: [
+                    { text: "Gradually, as I get to know them better", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
+                    { text: "Quickly, maybe sometimes too quickly", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "Slowly, I'm naturally cautious", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 2 } },
+                    { text: "I struggle to trust even when I want to", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "When a partner needs space, I...",
+                options: [
+                    { text: "Respect it and trust they'll reconnect when ready", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
+                    { text: "Feel anxious and want to know why", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
+                    { text: "Feel relieved and enjoy my own space", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
+                    { text: "Feel rejected and withdraw myself", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
+                ]
+            },
+            {
+                text: "Looking at my past relationships, I notice...",
+                options: [
+                    { text: "A pattern of healthy, mutual communication", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "I often felt more invested than my partners", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "I tended to prioritize my independence", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
+                    { text: "A confusing push-pull dynamic", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "My comfort level with physical and emotional intimacy is...",
+                options: [
+                    { text: "Comfortable with both in the right relationship", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
+                    { text: "I crave it and sometimes fear losing it", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
+                    { text: "I need my own space even in close relationships", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "I desire it but it makes me uncomfortable", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "When I feel rejected or criticized, I tend to...",
+                options: [
+                    { text: "Process it and communicate how I feel", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Take it very personally and feel deeply hurt", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
+                    { text: "Brush it off and focus on other things", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
+                    { text: "Feel hurt but hide it and distance myself", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
+                ]
+            },
+            {
+                text: "In terms of expressing my needs in relationships, I...",
+                options: [
+                    { text: "Feel comfortable stating what I need clearly", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
+                    { text: "Express them but worry about being too demanding", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "Prefer to meet my own needs independently", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "Have needs but struggle to voice them", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "When someone gets too close emotionally, I...",
+                options: [
+                    { text: "Welcome the closeness if it feels mutual", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
+                    { text: "Feel happy and more connected", score: { secure: 2, anxious: 3, avoidant: 0, fearful: 0 } },
+                    { text: "Start to feel smothered and need distance", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "Want it but feel the urge to push away", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "My beliefs about depending on others are...",
+                options: [
+                    { text: "Healthy interdependence strengthens relationships", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
+                    { text: "I rely heavily on close relationships for support", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "I believe in being self-sufficient", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "I want to depend on others but don't trust it", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "When thinking about commitment in relationships, I...",
+                options: [
+                    { text: "Feel ready when I've found the right person", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Commit quickly when I feel a strong connection", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "Feel hesitant and value my freedom", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "Want it but fear being trapped or hurt", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "After a breakup, I typically...",
+                options: [
+                    { text: "Grieve, learn, and eventually move forward", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Struggle intensely and reach out repeatedly", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "Move on relatively quickly and easily", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
+                    { text: "Feel devastated but pretend I'm fine", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
+                ]
+            },
+            {
+                text: "My approach to resolving misunderstandings is...",
+                options: [
+                    { text: "Talk it through openly and find solutions", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Need to talk immediately, can't rest until resolved", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "Give it time and space before addressing", score: { secure: 2, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "Avoid the conversation altogether", score: { secure: 0, anxious: 0, avoidant: 2, fearful: 3 } }
+                ]
+            },
+            {
+                text: "When I'm in a secure, stable relationship, I...",
+                options: [
+                    { text: "Feel content and appreciative", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Still sometimes worry it won't last", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
+                    { text: "Start feeling like I need more space", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "Wait for something to go wrong", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "My communication style in relationships is...",
+                options: [
+                    { text: "Direct, honest, and respectful", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Very expressive, sometimes overwhelming", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "Reserved and selective about what I share", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
+                    { text: "Inconsistent - sometimes open, sometimes shut down", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "When I think about my childhood relationships with caregivers, I...",
+                options: [
+                    { text: "Felt consistently loved and supported", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Felt anxious about whether I was loved enough", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "Learned to be independent early on", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "Experienced inconsistency or fear", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "My biggest fear in close relationships is...",
+                options: [
+                    { text: "I don't have a major fear, just normal concerns", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Being abandoned or not being enough", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
+                    { text: "Losing my independence or sense of self", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "Both intimacy and abandonment simultaneously", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "When a partner shares deep emotions with me, I...",
+                options: [
+                    { text: "Feel honored and respond with empathy", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
+                    { text: "Feel very connected and reciprocate deeply", score: { secure: 2, anxious: 3, avoidant: 0, fearful: 0 } },
+                    { text: "Feel a bit uncomfortable and unsure how to respond", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
+                    { text: "Want to be supportive but feel overwhelmed", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "My pattern of seeking or avoiding closeness is...",
+                options: [
+                    { text: "Balanced - I seek closeness when it feels right", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "I actively seek closeness and connection", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 0 } },
+                    { text: "I generally avoid too much closeness", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "I alternate between seeking and avoiding it", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: "When I imagine my ideal relationship, it involves...",
+                options: [
+                    { text: "Mutual respect, trust, and balanced intimacy", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Deep emotional fusion and constant connection", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "Companionship but maintaining separateness", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: "Safety and closeness without fear", score: { secure: 2, anxious: 1, avoidant: 0, fearful: 3 } }
+                ]
+            },
+            {
+                text: "My self-worth in relationships is...",
+                options: [
+                    { text: "Stable and doesn't depend heavily on my partner", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
+                    { text: "Often influenced by how my partner treats me", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
+                    { text: "Independent of relationships - I validate myself", score: { secure: 2, anxious: 0, avoidant: 3, fearful: 0 } },
+                    { text: "Fragile and I struggle with self-doubt", score: { secure: 0, anxious: 2, avoidant: 0, fearful: 3 } }
+                ]
+            },
+            {
+                text: "When someone shows genuine interest in me, I...",
+                options: [
+                    { text: "Appreciate it and reciprocate appropriately", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: "Feel excited and get very invested quickly", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: "Feel skeptical or maintain emotional distance", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
+                    { text: "Feel both drawn to them and want to run away", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            }
+        ];
+
+        const attachmentStyles = {
+            secure: {
+                title: "Secure Attachment",
+                color: "linear-gradient(to bottom right, #34d399, #14b8a6)",
+                description: "You have a healthy, balanced approach to relationships with comfort in both intimacy and independence.",
+                traits: ["Emotionally available", "Good boundaries", "Comfortable with intimacy", "Effective communicator", "Trusts easily", "Self-aware"],
+                strengths: "Your secure attachment allows you to form deep, meaningful connections while maintaining your sense of self. You navigate conflicts constructively and trust comes naturally.",
+                growth: "Continue nurturing your relationships with open communication. Your stability can help partners with insecure attachment patterns feel safer.",
+                percentage: "50-60% of adults"
+            },
+            anxious: {
+                title: "Anxious-Preoccupied",
+                color: "linear-gradient(to bottom right, #fbbf24, #f97316)",
+                description: "You deeply value close relationships and may sometimes worry about your partner's feelings or availability.",
+                traits: ["Highly empathetic", "Values closeness", "Intuitive", "Passionate", "Loyal", "Emotionally expressive"],
+                strengths: "Your capacity for deep emotional connection and attunement to others' feelings is a gift. You invest fully in relationships and aren't afraid to show you care.",
+                growth: "Practice self-soothing and building self-worth independent of relationships. Mindfulness and therapy can help manage relationship anxiety while preserving your wonderful sensitivity.",
+                percentage: "20% of adults"
+            },
+            avoidant: {
+                title: "Dismissive-Avoidant",
+                color: "linear-gradient(to bottom right, #60a5fa, #818cf8)",
+                description: "You value independence and self-reliance, preferring to maintain some emotional distance even in close relationships.",
+                traits: ["Self-reliant", "Independent", "Strong boundaries", "Logical", "Self-sufficient", "Resilient"],
+                strengths: "Your independence and self-sufficiency are valuable traits. You maintain your identity in relationships and don't lose yourself in others.",
+                growth: "Challenge yourself to practice vulnerability in small doses with trusted people. Recognizing that needing others isn't weakness can deepen your connections without threatening your autonomy.",
+                percentage: "25% of adults"
+            },
+            fearful: {
+                title: "Fearful-Avoidant",
+                color: "linear-gradient(to bottom right, #a78bfa, #ec4899)",
+                description: "You experience both a desire for intimacy and fear of it, creating an internal push-pull dynamic in relationships.",
+                traits: ["Deeply introspective", "Highly perceptive", "Complex", "Resilient", "Self-aware", "Empathetic"],
+                strengths: "Your awareness of the complexity of relationships gives you deep insight into human connection. You see multiple perspectives and understand nuance.",
+                growth: "Therapy, especially focusing on trauma or early attachment wounds, can be transformative. Practice self-compassion and gradual vulnerability with safe people. Your healing journey can lead to profound growth.",
+                percentage: "5-10% of adults"
+            }
+        };
+
+        let currentQuestion = 0;
+        let selectedOptions = [];
+        let answers = [];
+
+        function startQuiz() {
+            document.getElementById('welcomeScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('questionText').textContent = question.text;
+            document.getElementById('progressText').textContent = `${currentQuestion + 1}/${questions.length}`;
+            
+            // Render progress bars
+            const progressBars = document.getElementById('progressBars');
+            progressBars.innerHTML = '';
+            questions.forEach((_, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'progress-bar';
+                if (index < currentQuestion) bar.classList.add('completed');
+                if (index === currentQuestion) bar.classList.add('current');
+                progressBars.appendChild(bar);
+            });
+
+            // Render options
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option.text;
+                optionDiv.onclick = () => toggleOption(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+
+            selectedOptions = [];
+            updateNextButton();
+        }
+
+        function toggleOption(index) {
+            const optionElements = document.querySelectorAll('.option');
+            
+            if (selectedOptions.includes(index)) {
+                selectedOptions = selectedOptions.filter(i => i !== index);
+                optionElements[index].classList.remove('selected');
+            } else {
+                selectedOptions.push(index);
+                optionElements[index].classList.add('selected');
+            }
+            
+            updateNextButton();
+        }
+
+        function updateNextButton() {
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.disabled = selectedOptions.length === 0;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.textContent = 'See Results';
+            } else {
+                nextBtn.textContent = 'Next';
+            }
+        }
+
+        function handleNext() {
+            if (selectedOptions.length === 0) return;
+
+            const selectedAnswers = selectedOptions.map(i => questions[currentQuestion].options[i]);
+            answers.push(selectedAnswers);
+
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            const scores = { secure: 0, anxious: 0, avoidant: 0, fearful: 0 };
+            let totalPoints = 0;
+
+            answers.forEach(answerSet => {
+                answerSet.forEach(answer => {
+                    Object.keys(scores).forEach(style => {
+                        scores[style] += answer.score[style];
+                        totalPoints += answer.score[style];
+                    });
+                });
+            });
+
+            const percentages = {};
+            Object.keys(scores).forEach(style => {
+                percentages[style] = totalPoints > 0 ? Math.round((scores[style] / totalPoints) * 100) : 0;
+            });
+
+            const sortedStyles = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+            const primary = sortedStyles[0];
+            const secondary = percentages[sortedStyles[1]] >= 20 ? sortedStyles[1] : null;
+
+            renderResults(percentages, primary, secondary);
+
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+        }
+
+        function renderResults(percentages, primary, secondary) {
+            const resultsScreen = document.getElementById('resultsScreen');
+            
+            const icons = {
+                secure: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+                anxious: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+                avoidant: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
+                fearful: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>'
+            };
+
+            const smallIcons = {
+                secure: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+                anxious: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+                avoidant: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
+                fearful: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>'
+            };
+
+            let html = `
+                <div class="results-header">
+                    <h2 class="results-title">Your Attachment Profile</h2>
+                    <p class="results-subtitle">Most people have mixed patterns. Here's your complete breakdown:</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>Your Attachment Breakdown</h3>
+                    <div>
+            `;
+
+            Object.keys(percentages).sort((a, b) => percentages[b] - percentages[a]).forEach(style => {
+                html += '<div class="percentage-item">' +
+                    '<div class="percentage-header">' +
+                        '<div class="percentage-label">' +
+                            '<div class="icon-badge" style="background: ' + attachmentStyles[style].color + '">' +
+                                smallIcons[style] +
+                            '</div>' +
+                            '<span style="font-weight: 600">' + attachmentStyles[style].title + '</span>' +
+                        '</div>' +
+                        '<span style="font-weight: bold; font-size: 1.25rem">' + percentages[style] + '%</span>' +
+                    '</div>' +
+                    '<div class="percentage-bar-bg">' +
+                        '<div class="percentage-bar-fill" style="background: ' + attachmentStyles[style].color + '; width: ' + percentages[style] + '%"></div>' +
+                    '</div>' +
+                '</div>';
+            });
+
+            html += `
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="primary-style-header">
+                        <div class="primary-icon" style="background: ${attachmentStyles[primary].color}">
+                            ${icons[primary]}
+                        </div>
+                        <div>
+                            <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.875rem">Primary Style</p>
+                            <h3 style="font-size: 1.875rem; font-weight: bold; margin: 0">${attachmentStyles[primary].title}</h3>
+                            <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.875rem; margin-top: 0.25rem">${attachmentStyles[primary].percentage}</p>
+                        </div>
+                    </div>
+
+                    <p style="line-height: 1.75; margin-bottom: 1.5rem; color: rgba(255, 255, 255, 0.9)">
+                        ${attachmentStyles[primary].description}
+                    </p>
+
+                    <div class="section">
+                        <h4>Your Strengths</h4>
+                        <div class="traits-grid">
+                            ${attachmentStyles[primary].traits.map(trait => `<div class="trait-item">${trait}</div>`).join('')}
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h4>What This Means</h4>
+                        <p>${attachmentStyles[primary].strengths}</p>
+                    </div>
+
+                    <div class="section">
+                        <h4>Growth Opportunities</h4>
+                        <p>${attachmentStyles[primary].growth}</p>
+                    </div>
+                </div>
+            `;
+
+            if (secondary) {
+                html += `
+                    <div class="result-card">
+                        <div class="primary-style-header">
+                            <div class="primary-icon" style="background: ${attachmentStyles[secondary].color}">
+                                ${icons[secondary]}
+                            </div>
+                            <div>
+                                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.875rem">Secondary Tendency</p>
+                                <h3 style="font-size: 1.5rem; font-weight: bold; margin: 0">${attachmentStyles[secondary].title}</h3>
+                            </div>
+                        </div>
+
+                        <p style="line-height: 1.75; margin-bottom: 1rem; color: rgba(255, 255, 255, 0.9)">
+                            You also show tendencies toward ${attachmentStyles[secondary].title.toLowerCase()}. ${attachmentStyles[secondary].description}
+                        </p>
+
+                        <p style="line-height: 1.75; color: rgba(255, 255, 255, 0.8)">
+                            ${attachmentStyles[secondary].growth}
+                        </p>
+                    </div>
+                `;
+            }
+
+            html += `
+                <div class="result-card">
+                    <h3>Understanding Your Profile</h3>
+                    <div style="line-height: 1.75; color: rgba(255, 255, 255, 0.9)">
+                        <p style="margin-bottom: 0.75rem">
+                            <strong style="color: white">It's normal to have mixed patterns.</strong> Attachment styles aren't fixed categories—they're patterns that can vary by relationship, context, and personal growth.
+                        </p>
+                        <p style="margin-bottom: 0.75rem">
+                            <strong style="color: white">Your style can change.</strong> With self-awareness, therapy, and secure relationships, people can develop more secure attachment patterns over time.
+                        </p>
+                        <p style="margin-bottom: 0.75rem">
+                            <strong style="color: white">Different relationships, different patterns.</strong> You might be secure with friends but anxious in romantic relationships, or vice versa.
+                        </p>
+                        <p>
+                            <strong style="color: white">This is a starting point.</strong> Use these insights for self-reflection and growth, not as limiting labels. Consider discussing your results with a therapist for deeper exploration.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="text-align: center">
+                    <button class="btn-primary" onclick="restartQuiz()">
+                        <span>Take Assessment Again</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            `;
+
+            resultsScreen.innerHTML = html;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            selectedOptions = [];
+            answers = [];
+            
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('welcomeScreen').classList.add('active');
+        }
+    </script>
+</body>
+</html>
