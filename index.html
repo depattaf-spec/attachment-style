@@ -1,968 +1,427 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attachment Style Assessment</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life in Weeks</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(to bottom right, #312e81, #581c87, #9d174d);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            color: white;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f9fafb;
+      min-height: 100vh;
+      padding: 6rem 1.5rem 1.5rem;
+    }
 
-        .container {
-            max-width: 672px;
-            width: 100%;
-        }
+    .container {
+      max-width: 28rem;
+      margin: 0 auto;
+    }
 
-        .screen {
-            display: none;
-            opacity: 0;
-            transform: scale(0.95);
-            transition: all 0.5s ease;
-        }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: #000;
+      margin-bottom: 0.5rem;
+    }
 
-        .screen.active {
-            display: block;
-            opacity: 1;
-            transform: scale(1);
-        }
+    .subtitle {
+      color: #6b7280;
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
 
-        .welcome-screen {
-            text-align: center;
-        }
+    .card {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(12px);
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+    }
 
-        .title-container {
-            position: relative;
-            margin-bottom: 2rem;
-        }
+    h2 {
+      font-size: 1.125rem;
+      font-weight: 300;
+      color: #000;
+      margin-bottom: 1rem;
+    }
 
-        .title-glow {
-            position: absolute;
-            inset: 0;
-            filter: blur(60px);
-            background: linear-gradient(to right, #ec4899, #8b5cf6);
-            opacity: 0.3;
-            border-radius: 50%;
-        }
+    .input-group {
+      margin-bottom: 1rem;
+    }
 
-        h1 {
-            position: relative;
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
+    input[type="date"] {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(4px);
+      color: #374151;
+      font-weight: 300;
+      font-size: 1rem;
+    }
 
-        .gradient-text {
-            display: block;
-            background: linear-gradient(to right, #f9a8d4, #c4b5fd);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+    input[type="date"]:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.5);
+    }
 
-        .subtitle {
-            font-size: 1.25rem;
-            color: white;
-            line-height: 1.75;
-            margin: 0 auto 2rem;
-            max-width: 28rem;
-            padding: 0 1rem;
-        }
+    .btn {
+      width: 100%;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 300;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
 
-        .info-box {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            max-width: 28rem;
-            margin: 0 auto 2rem;
-        }
+    .btn-primary {
+      background: #000;
+      color: white;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
 
-        .info-box p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.875rem;
-            line-height: 1.5;
-        }
+    .btn-primary:hover:not(:disabled) {
+      background: #1f2937;
+    }
 
-        .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 9999px;
-            font-weight: 600;
-            font-size: 1.125rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
-        .btn-primary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-        }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(12px);
+      border: 1px solid #e5e7eb;
+      color: #000;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
 
-        .progress-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.6);
+    }
 
-        .progress-bars {
-            display: flex;
-            gap: 0.25rem;
-            flex: 1;
-            margin-right: 1rem;
-        }
+    .week-grid {
+      display: flex;
+      flex-direction: column;
+      margin-top: 1rem;
+    }
 
-        .progress-bar {
-            height: 8px;
-            flex: 1;
-            border-radius: 9999px;
-            background: rgba(255, 255, 255, 0.2);
-            transition: all 0.5s ease;
-        }
+    .week-row {
+      display: flex;
+    }
 
-        .progress-bar.completed {
-            background: linear-gradient(to right, #f9a8d4, #c4b5fd);
-        }
+    .week-cell {
+      width: 0.5rem;
+      height: 0.5rem;
+      margin: 0.125rem;
+      border-radius: 0.125rem;
+      transition: all 0.3s;
+    }
 
-        .progress-bar.current {
-            background: rgba(255, 255, 255, 0.5);
-        }
+    .week-past {
+      background: #000;
+    }
 
-        .progress-text {
-            color: white;
-            font-size: 0.875rem;
-            font-weight: 500;
-            white-space: nowrap;
-        }
+    .week-current {
+      background: #6b7280;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    }
 
-        .question-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-        }
+    .week-future {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+    }
 
-        .question-header {
-            margin-bottom: 1.5rem;
-        }
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
 
-        .question-text {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.75rem;
-            line-height: 1.5;
-            color: rgb(255, 255, 255);
-        }
+    .legend {
+      display: flex;
+      margin-top: 1.5rem;
+      font-size: 0.875rem;
+    }
 
-        .question-hint {
-            font-size: 0.875rem;
-            color: rgb(224, 224, 224);
-        }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-right: 1rem;
+    }
 
-        .options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-        }
+    .legend-box {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 0.125rem;
+      margin-right: 0.5rem;
+    }
 
-        .option {
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-            color: rgb(255, 255, 255);
-            font-size: 1.125rem;
-            line-height: 1.6;
-            font-weight: 500;
-        }
+    .legend-text {
+      color: #6b7280;
+      font-weight: 300;
+    }
 
-        .option:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
+    .hover-info {
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      font-weight: 300;
+      min-height: 1.5rem;
+    }
 
-        .option.selected {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            transform: scale(1.02);
-        }
+    .stat-text {
+      color: #6b7280;
+      font-weight: 300;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
 
-        .btn-next {
-            width: 100%;
-            padding: 1rem;
-            border-radius: 1rem;
-            font-weight: 600;
-            font-size: 1.125rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: rgb(255, 255, 255);
-        }
+    .stat-text:last-child {
+      margin-bottom: 0;
+    }
 
-        .btn-next:disabled {
-            background: rgba(255, 255, 255, 0.1);
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+    .stat-highlight {
+      color: #000;
+      font-weight: 500;
+    }
 
-        .btn-next:not(:disabled) {
-            background: linear-gradient(to right, #ec4899, #8b5cf6);
-        }
+    .stats-section {
+      margin-top: 2rem;
+    }
 
-        .btn-next:not(:disabled):hover {
-            transform: scale(1.02);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-        }
-
-        .results-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .results-title {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-
-        .results-subtitle {
-            font-size: 1.125rem;
-            color: rgba(255, 255, 255, 0.8);
-            max-width: 40rem;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        .result-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            margin-bottom: 1.5rem;
-        }
-
-        .result-card h3 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-        }
-
-        .percentage-item {
-            margin-bottom: 1.5rem;
-        }
-
-        .percentage-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .percentage-label {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .icon-badge {
-            padding: 0.5rem;
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .icon-badge svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .percentage-bar-bg {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 9999px;
-            height: 12px;
-            overflow: hidden;
-        }
-
-        .percentage-bar-fill {
-            height: 100%;
-            border-radius: 9999px;
-            transition: width 1s ease;
-        }
-
-        .primary-style-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .primary-icon {
-            padding: 1rem;
-            border-radius: 9999px;
-        }
-
-        .primary-icon svg {
-            width: 48px;
-            height: 48px;
-        }
-
-        .traits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 0.5rem;
-            margin: 1rem 0;
-        }
-
-        .trait-item {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            text-align: center;
-            font-size: 0.875rem;
-        }
-
-        .section {
-            margin-bottom: 1.5rem;
-        }
-
-        .section h4 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .section p {
-            line-height: 1.75;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        @media (max-width: 640px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .question-text {
-                font-size: 1.25rem;
-            }
-
-            .results-title {
-                font-size: 2rem;
-            }
-        }
-    </style>
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div id="welcomeScreen" class="screen active">
-            <div class="welcome-screen">
-                <div class="title-container">
-                    <div class="title-glow"></div>
-                    <h1>
-                        Discover Your
-                        <span class="gradient-text">Attachment Style</span>
-                    </h1>
-                </div>
-                
-                <p class="subtitle">
-                    A comprehensive 25-question assessment based on attachment theory research
-                </p>
-                
-                <div class="info-box">
-                    <p>
-                        Most people have a mix of attachment patterns. This assessment will show you your complete profile across all four styles, not just one label.
-                    </p>
-                </div>
-                
-                <button class="btn-primary" id="startBtn">
-                    <span>Begin Assessment</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                </button>
-            </div>
-        </div>
+  <div class="container">
+    <h1>Life in weeks</h1>
+    <p class="subtitle">A simple visualization to reflect on the passage of time</p>
 
-        <div id="quizScreen" class="screen">
-            <div class="progress-container">
-                <div class="progress-bars" id="progressBars"></div>
-                <span class="progress-text" id="progressText">1/25</span>
-            </div>
-
-            <div class="question-card">
-                <div class="question-header">
-                    <h2 class="question-text" id="questionText"></h2>
-                    <p class="question-hint">Select all that apply</p>
-                </div>
-                
-                <div class="options-container" id="optionsContainer"></div>
-
-                <button class="btn-next" id="nextBtn" disabled>
-                    Next
-                </button>
-            </div>
-        </div>
-
-        <div id="resultsScreen" class="screen"></div>
+    <div id="step1" class="card">
+      <h2>When were you born?</h2>
+      <div class="input-group">
+        <input type="date" id="birthdate" />
+      </div>
+      <button class="btn btn-primary" onclick="visualize()">Visualize your time</button>
     </div>
 
-    <script>
-        const questions = [
-            {
-                text: "When someone I care about doesn't respond to my messages for a while, I...",
-                options: [
-                    { text: "Assume they're busy and will get back when they can", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
-                    { text: "Start worrying about what I might have done wrong", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-                    { text: "Don't really think much about it", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
-                    { text: "Feel anxious but try to distract myself", score: { secure: 0, anxious: 2, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "In a relationship, I find myself...",
-                options: [
-                    { text: "Comfortable being both close and independent", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Wanting constant reassurance of their feelings", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "Needing significant personal space", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "Wanting closeness but pulling away when I get it", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "When I need emotional support, I typically...",
-                options: [
-                    { text: "Reach out to trusted people without hesitation", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-                    { text: "Seek support but worry I'm being too needy", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-                    { text: "Prefer to handle things on my own", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "Want help but struggle to ask for it", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
-                ]
-            },
-            {
-                text: "My view on being vulnerable with a partner is...",
-                options: [
-                    { text: "It's essential for building intimacy", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-                    { text: "I'm very open, sometimes too much too soon", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "I prefer to keep certain things private", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
-                    { text: "I want to be open but it feels terrifying", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "When conflict arises with someone close to me, I...",
-                options: [
-                    { text: "Address it directly but calmly", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Get very upset and need to resolve it immediately", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "Withdraw and need space before discussing", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "Shut down emotionally and don't know what to do", score: { secure: 0, anxious: 0, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "I trust new people in my life...",
-                options: [
-                    { text: "Gradually, as I get to know them better", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
-                    { text: "Quickly, maybe sometimes too quickly", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "Slowly, I'm naturally cautious", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 2 } },
-                    { text: "I struggle to trust even when I want to", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "When a partner needs space, I...",
-                options: [
-                    { text: "Respect it and trust they'll reconnect when ready", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
-                    { text: "Feel anxious and want to know why", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-                    { text: "Feel relieved and enjoy my own space", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
-                    { text: "Feel rejected and withdraw myself", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
-                ]
-            },
-            {
-                text: "Looking at my past relationships, I notice...",
-                options: [
-                    { text: "A pattern of healthy, mutual communication", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "I often felt more invested than my partners", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "I tended to prioritize my independence", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
-                    { text: "A confusing push-pull dynamic", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "My comfort level with physical and emotional intimacy is...",
-                options: [
-                    { text: "Comfortable with both in the right relationship", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-                    { text: "I crave it and sometimes fear losing it", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-                    { text: "I need my own space even in close relationships", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "I desire it but it makes me uncomfortable", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "When I feel rejected or criticized, I tend to...",
-                options: [
-                    { text: "Process it and communicate how I feel", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Take it very personally and feel deeply hurt", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-                    { text: "Brush it off and focus on other things", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
-                    { text: "Feel hurt but hide it and distance myself", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
-                ]
-            },
-            {
-                text: "In terms of expressing my needs in relationships, I...",
-                options: [
-                    { text: "Feel comfortable stating what I need clearly", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-                    { text: "Express them but worry about being too demanding", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "Prefer to meet my own needs independently", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "Have needs but struggle to voice them", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "When someone gets too close emotionally, I...",
-                options: [
-                    { text: "Welcome the closeness if it feels mutual", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-                    { text: "Feel happy and more connected", score: { secure: 2, anxious: 3, avoidant: 0, fearful: 0 } },
-                    { text: "Start to feel smothered and need distance", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "Want it but feel the urge to push away", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "My beliefs about depending on others are...",
-                options: [
-                    { text: "Healthy interdependence strengthens relationships", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-                    { text: "I rely heavily on close relationships for support", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "I believe in being self-sufficient", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "I want to depend on others but don't trust it", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "When thinking about commitment in relationships, I...",
-                options: [
-                    { text: "Feel ready when I've found the right person", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Commit quickly when I feel a strong connection", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "Feel hesitant and value my freedom", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "Want it but fear being trapped or hurt", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "After a breakup, I typically...",
-                options: [
-                    { text: "Grieve, learn, and eventually move forward", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Struggle intensely and reach out repeatedly", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "Move on relatively quickly and easily", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 0 } },
-                    { text: "Feel devastated but pretend I'm fine", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
-                ]
-            },
-            {
-                text: "My approach to resolving misunderstandings is...",
-                options: [
-                    { text: "Talk it through openly and find solutions", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Need to talk immediately, can't rest until resolved", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "Give it time and space before addressing", score: { secure: 2, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "Avoid the conversation altogether", score: { secure: 0, anxious: 0, avoidant: 2, fearful: 3 } }
-                ]
-            },
-            {
-                text: "When I'm in a secure, stable relationship, I...",
-                options: [
-                    { text: "Feel content and appreciative", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Still sometimes worry it won't last", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-                    { text: "Start feeling like I need more space", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "Wait for something to go wrong", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "My communication style in relationships is...",
-                options: [
-                    { text: "Direct, honest, and respectful", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Very expressive, sometimes overwhelming", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "Reserved and selective about what I share", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
-                    { text: "Inconsistent - sometimes open, sometimes shut down", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "When I think about my childhood relationships with caregivers, I...",
-                options: [
-                    { text: "Felt consistently loved and supported", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Felt anxious about whether I was loved enough", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "Learned to be independent early on", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "Experienced inconsistency or fear", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "My biggest fear in close relationships is...",
-                options: [
-                    { text: "I don't have a major fear, just normal concerns", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Being abandoned or not being enough", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-                    { text: "Losing my independence or sense of self", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "Both intimacy and abandonment simultaneously", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "When a partner shares deep emotions with me, I...",
-                options: [
-                    { text: "Feel honored and respond with empathy", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
-                    { text: "Feel very connected and reciprocate deeply", score: { secure: 2, anxious: 3, avoidant: 0, fearful: 0 } },
-                    { text: "Feel a bit uncomfortable and unsure how to respond", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
-                    { text: "Want to be supportive but feel overwhelmed", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "My pattern of seeking or avoiding closeness is...",
-                options: [
-                    { text: "Balanced - I seek closeness when it feels right", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "I actively seek closeness and connection", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 0 } },
-                    { text: "I generally avoid too much closeness", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "I alternate between seeking and avoiding it", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            },
-            {
-                text: "When I imagine my ideal relationship, it involves...",
-                options: [
-                    { text: "Mutual respect, trust, and balanced intimacy", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Deep emotional fusion and constant connection", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "Companionship but maintaining separateness", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
-                    { text: "Safety and closeness without fear", score: { secure: 2, anxious: 1, avoidant: 0, fearful: 3 } }
-                ]
-            },
-            {
-                text: "My self-worth in relationships is...",
-                options: [
-                    { text: "Stable and doesn't depend heavily on my partner", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
-                    { text: "Often influenced by how my partner treats me", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
-                    { text: "Independent of relationships - I validate myself", score: { secure: 2, anxious: 0, avoidant: 3, fearful: 0 } },
-                    { text: "Fragile and I struggle with self-doubt", score: { secure: 0, anxious: 2, avoidant: 0, fearful: 3 } }
-                ]
-            },
-            {
-                text: "When someone shows genuine interest in me, I...",
-                options: [
-                    { text: "Appreciate it and reciprocate appropriately", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
-                    { text: "Feel excited and get very invested quickly", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
-                    { text: "Feel skeptical or maintain emotional distance", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
-                    { text: "Feel both drawn to them and want to run away", score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
-                ]
-            }
-        ];
+    <div id="step2" class="hidden">
+      <div class="card">
+        <h2>Your life in weeks</h2>
+        <div id="weekGrid" class="week-grid"></div>
+        <div id="hoverInfo" class="hover-info"></div>
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-box week-past"></div>
+            <span class="legend-text">Past</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box week-current"></div>
+            <span class="legend-text">Present</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box week-future"></div>
+            <span class="legend-text">Future</span>
+          </div>
+        </div>
+      </div>
 
-        const attachmentStyles = {
-            secure: {
-                title: "Secure Attachment",
-                color: "linear-gradient(to bottom right, #34d399, #14b8a6)",
-                description: "You have a healthy, balanced approach to relationships with comfort in both intimacy and independence.",
-                traits: ["Emotionally available", "Good boundaries", "Comfortable with intimacy", "Effective communicator", "Trusts easily", "Self-aware"],
-                strengths: "Your secure attachment allows you to form deep, meaningful connections while maintaining your sense of self. You navigate conflicts constructively and trust comes naturally.",
-                growth: "Continue nurturing your relationships with open communication. Your stability can help partners with insecure attachment patterns feel safer.",
-                percentage: "50-60% of adults"
-            },
-            anxious: {
-                title: "Anxious-Preoccupied",
-                color: "linear-gradient(to bottom right, #fbbf24, #f97316)",
-                description: "You deeply value close relationships and may sometimes worry about your partner's feelings or availability.",
-                traits: ["Highly empathetic", "Values closeness", "Intuitive", "Passionate", "Loyal", "Emotionally expressive"],
-                strengths: "Your capacity for deep emotional connection and attunement to others' feelings is a gift. You invest fully in relationships and aren't afraid to show you care.",
-                growth: "Practice self-soothing and building self-worth independent of relationships. Mindfulness and therapy can help manage relationship anxiety while preserving your wonderful sensitivity.",
-                percentage: "20% of adults"
-            },
-            avoidant: {
-                title: "Dismissive-Avoidant",
-                color: "linear-gradient(to bottom right, #60a5fa, #818cf8)",
-                description: "You value independence and self-reliance, preferring to maintain some emotional distance even in close relationships.",
-                traits: ["Self-reliant", "Independent", "Strong boundaries", "Logical", "Self-sufficient", "Resilient"],
-                strengths: "Your independence and self-sufficiency are valuable traits. You maintain your identity in relationships and don't lose yourself in others.",
-                growth: "Challenge yourself to practice vulnerability in small doses with trusted people. Recognizing that needing others isn't weakness can deepen your connections without threatening your autonomy.",
-                percentage: "25% of adults"
-            },
-            fearful: {
-                title: "Fearful-Avoidant",
-                color: "linear-gradient(to bottom right, #a78bfa, #ec4899)",
-                description: "You experience both a desire for intimacy and fear of it, creating an internal push-pull dynamic in relationships.",
-                traits: ["Deeply introspective", "Highly perceptive", "Complex", "Resilient", "Self-aware", "Empathetic"],
-                strengths: "Your awareness of the complexity of relationships gives you deep insight into human connection. You see multiple perspectives and understand nuance.",
-                growth: "Therapy, especially focusing on trauma or early attachment wounds, can be transformative. Practice self-compassion and gradual vulnerability with safe people. Your healing journey can lead to profound growth.",
-                percentage: "5-10% of adults"
-            }
-        };
+      <div id="statsContainer" class="stats-section"></div>
 
-        let currentQuestion = 0;
-        let selectedOptions = [];
-        let answers = [];
+      <button class="btn btn-secondary" onclick="reset()">Start over</button>
+    </div>
+  </div>
 
-        const icons = {
-            secure: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
-            anxious: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
-            avoidant: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
-            fearful: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>'
-        };
+  <script>
+    var stats = null;
 
-        const smallIcons = {
-            secure: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
-            anxious: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
-            avoidant: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
-            fearful: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>'
-        };
+    function formatNumber(num) {
+      return new Intl.NumberFormat().format(num);
+    }
 
-        function startQuiz() {
-            document.getElementById('welcomeScreen').classList.remove('active');
-            document.getElementById('quizScreen').classList.add('active');
-            renderQuestion();
-        }
+    function getPopulationAtYear(year) {
+      var populationData = {
+        1950: 2.5, 1960: 3.0, 1970: 3.7, 1980: 4.4,
+        1990: 5.3, 2000: 6.1, 2010: 6.9, 2020: 7.8, 2025: 8.1
+      };
+      
+      var years = Object.keys(populationData).map(Number);
+      var closestYear = years.reduce(function(prev, curr) {
+        return Math.abs(curr - year) < Math.abs(prev - year) ? curr : prev;
+      });
+      
+      return Math.round(populationData[closestYear] * 1000000000);
+    }
 
-        function renderQuestion() {
-            const question = questions[currentQuestion];
-            document.getElementById('questionText').textContent = question.text;
-            document.getElementById('progressText').textContent = `${currentQuestion + 1}/${questions.length}`;
+    function calculateStats(birthdate) {
+      var birthDate = new Date(birthdate);
+      var today = new Date();
+      var birthYear = birthDate.getFullYear();
+      
+      var msInWeek = 1000 * 60 * 60 * 24 * 7;
+      var weeksLived = Math.floor((today - birthDate) / msInWeek);
+      
+      var totalWeeks = 4160;
+      var weeksRemaining = totalWeeks - weeksLived;
+      var percentageLived = Math.round((weeksLived / totalWeeks) * 100);
+      
+      var msInDay = 1000 * 60 * 60 * 24;
+      var daysLived = Math.floor((today - birthDate) / msInDay);
+      
+      var hoursSlept = Math.floor(daysLived * 8);
+      var heartbeats = Math.floor(daysLived * 24 * 60 * 70);
+      var breaths = Math.floor(daysLived * 24 * 60 * 16);
+      var seasons = Math.floor(daysLived / 91.25);
+      
+      return {
+        weeksLived: weeksLived,
+        totalWeeks: totalWeeks,
+        weeksRemaining: weeksRemaining,
+        percentageLived: percentageLived,
+        daysLived: daysLived,
+        hoursSlept: hoursSlept,
+        heartbeats: heartbeats,
+        breaths: breaths,
+        seasons: seasons,
+        birthYear: birthYear
+      };
+    }
+
+    function renderWeekGrid() {
+      var grid = document.getElementById('weekGrid');
+      grid.innerHTML = '';
+      
+      var weeksPerRow = 52;
+      var totalRows = Math.ceil(stats.totalWeeks / weeksPerRow);
+      
+      for (var row = 0; row < totalRows; row++) {
+        var rowDiv = document.createElement('div');
+        rowDiv.className = 'week-row';
+        
+        for (var col = 0; col < weeksPerRow; col++) {
+          var weekNumber = row * weeksPerRow + col;
+          if (weekNumber < stats.totalWeeks) {
+            var cell = document.createElement('div');
+            cell.className = 'week-cell';
             
-            const progressBars = document.getElementById('progressBars');
-            progressBars.innerHTML = '';
-            questions.forEach((_, index) => {
-                const bar = document.createElement('div');
-                bar.className = 'progress-bar';
-                if (index < currentQuestion) bar.classList.add('completed');
-                if (index === currentQuestion) bar.classList.add('current');
-                progressBars.appendChild(bar);
-            });
-
-            const optionsContainer = document.getElementById('optionsContainer');
-            optionsContainer.innerHTML = '';
-            question.options.forEach((option, index) => {
-                const optionDiv = document.createElement('div');
-                optionDiv.className = 'option';
-                optionDiv.textContent = option.text;
-                optionDiv.setAttribute('data-index', index);
-                optionDiv.onclick = function() { toggleOption(index); };
-                optionsContainer.appendChild(optionDiv);
-            });
-
-            selectedOptions = [];
-            updateNextButton();
-        }
-
-        function toggleOption(index) {
-            const optionElements = document.querySelectorAll('.option');
+            var isPast = weekNumber < stats.weeksLived;
+            var isCurrent = weekNumber === stats.weeksLived;
             
-            if (selectedOptions.includes(index)) {
-                selectedOptions = selectedOptions.filter(i => i !== index);
-                optionElements[index].classList.remove('selected');
+            if (isPast) {
+              cell.classList.add('week-past');
+            } else if (isCurrent) {
+              cell.classList.add('week-current');
             } else {
-                selectedOptions.push(index);
-                optionElements[index].classList.add('selected');
+              cell.classList.add('week-future');
             }
             
-            updateNextButton();
-        }
-
-        function updateNextButton() {
-            const nextBtn = document.getElementById('nextBtn');
-            nextBtn.disabled = selectedOptions.length === 0;
-            
-            if (currentQuestion === questions.length - 1) {
-                nextBtn.textContent = 'See Results';
-            } else {
-                nextBtn.textContent = 'Next';
-            }
-        }
-
-        function handleNext() {
-            if (selectedOptions.length === 0) return;
-
-            const selectedAnswers = selectedOptions.map(i => questions[currentQuestion].options[i]);
-            answers.push(selectedAnswers);
-
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                renderQuestion();
-            } else {
-                showResults();
-            }
-        }
-
-        function showResults() {
-            const scores = { secure: 0, anxious: 0, avoidant: 0, fearful: 0 };
-            let totalPoints = 0;
-
-            answers.forEach(answerSet => {
-                answerSet.forEach(answer => {
-                    Object.keys(scores).forEach(style => {
-                        scores[style] += answer.score[style];
-                        totalPoints += answer.score[style];
-                    });
-                });
+            cell.setAttribute('data-week', weekNumber);
+            cell.addEventListener('mouseenter', function() {
+              showHoverInfo(parseInt(this.getAttribute('data-week')));
             });
-
-            const percentages = {};
-            Object.keys(scores).forEach(style => {
-                percentages[style] = totalPoints > 0 ? Math.round((scores[style] / totalPoints) * 100) : 0;
-            });
-
-            const sortedStyles = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
-            const primary = sortedStyles[0];
-            const secondary = percentages[sortedStyles[1]] >= 20 ? sortedStyles[1] : null;
-
-            renderResults(percentages, primary, secondary);
-
-            document.getElementById('quizScreen').classList.remove('active');
-            document.getElementById('resultsScreen').classList.add('active');
-        }
-
-        function renderResults(percentages, primary, secondary) {
-            const resultsScreen = document.getElementById('resultsScreen');
+            cell.addEventListener('mouseleave', hideHoverInfo);
             
-            let html = `
-                <div class="results-header">
-                    <h2 class="results-title">Your Attachment Profile</h2>
-                    <p class="results-subtitle">Most people have mixed patterns. Here's your complete breakdown:</p>
-                </div>
-
-                <div class="result-card">
-                    <h3>Your Attachment Breakdown</h3>
-                    <div>
-            `;
-
-            Object.keys(percentages).sort((a, b) => percentages[b] - percentages[a]).forEach(style => {
-                html += `<div class="percentage-item">
-                    <div class="percentage-header">
-                        <div class="percentage-label">
-                            <div class="icon-badge" style="background: ${attachmentStyles[style].color}">
-                                ${smallIcons[style]}
-                            </div>
-                            <span style="font-weight: 600">${attachmentStyles[style].title}</span>
-                        </div>
-                        <span style="font-weight: bold; font-size: 1.25rem">${percentages[style]}%</span>
-                    </div>
-                    <div class="percentage-bar-bg">
-                        <div class="percentage-bar-fill" style="background: ${attachmentStyles[style].color}; width: ${percentages[style]}%"></div>
-                    </div>
-                </div>`;
-            });
-
-            html += `
-                    </div>
-                </div>
-
-                <div class="result-card">
-                    <div class="primary-style-header">
-                        <div class="primary-icon" style="background: ${attachmentStyles[primary].color}">
-                            ${icons[primary]}
-                        </div>
-                        <div>
-                            <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.875rem">Primary Style</p>
-                            <h3 style="font-size: 1.875rem; font-weight: bold; margin: 0">${attachmentStyles[primary].title}</h3>
-                            <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.875rem; margin-top: 0.25rem">${attachmentStyles[primary].percentage}</p>
-                        </div>
-                    </div>
-
-                    <p style="line-height: 1.75; margin-bottom: 1.5rem; color: rgba(255, 255, 255, 0.9)">
-                        ${attachmentStyles[primary].description}
-                    </p>
-
-                    <div class="section">
-                        <h4>Your Strengths</h4>
-                        <div class="traits-grid">
-                            ${attachmentStyles[primary].traits.map(trait => `<div class="trait-item">${trait}</div>`).join('')}
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <h4>What This Means</h4>
-                        <p>${attachmentStyles[primary].strengths}</p>
-                    </div>
-
-                    <div class="section">
-                        <h4>Growth Opportunities</h4>
-                        <p>${attachmentStyles[primary].growth}</p>
-                    </div>
-                </div>
-            `;
-
-            if (secondary) {
-                html += `
-                    <div class="result-card">
-                        <div class="primary-style-header">
-                            <div class="primary-icon" style="background: ${attachmentStyles[secondary].color}">
-                                ${icons[secondary]}
-                            </div>
-                            <div>
-                                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.875rem">Secondary Tendency</p>
-                                <h3 style="font-size: 1.5rem; font-weight: bold; margin: 0">${attachmentStyles[secondary].title}</h3>
-                            </div>
-                        </div>
-
-                        <p style="line-height: 1.75; margin-bottom: 1rem; color: rgba(255, 255, 255, 0.9)">
-                            You also show tendencies toward ${attachmentStyles[secondary].title.toLowerCase()}. ${attachmentStyles[secondary].description}
-                        </p>
-
-                        <p style="line-height: 1.75; color: rgba(255, 255, 255, 0.8)">
-                            ${attachmentStyles[secondary].growth}
-                        </p>
-                    </div>
-                `;
-            }
-
-            html += `
-                <div class="result-card">
-                    <h3>Understanding Your Profile</h3>
-                    <div style="line-height: 1.75; color: rgba(255, 255, 255, 0.9)">
-                        <p style="margin-bottom: 0.75rem">
-                            <strong style="color: white">It's normal to have mixed patterns.</strong> Attachment styles aren't fixed categories—they're patterns that can vary by relationship, context, and personal growth.
-                        </p>
-                        <p style="margin-bottom: 0.75rem">
-                            <strong style="color: white">Your style can change.</strong> With self-awareness, therapy, and secure relationships, people can develop more secure attachment patterns over time.
-                        </p>
-                        <p style="margin-bottom: 0.75rem">
-                            <strong style="color: white">Different relationships, different patterns.</strong> You might be secure with friends but anxious in romantic relationships, or vice versa.
-                        </p>
-                        <p>
-                            <strong style="color: white">This is a starting point.</strong> Use these insights for self-reflection and growth, not as limiting labels. Consider discussing your results with a therapist for deeper exploration.
-                        </p>
-                    </div>
-                </div>
-
-                <div style="text-align: center">
-                    <button class="btn-primary" id="restartBtn">
-                        <span>Take Assessment Again</span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                    </button>
-                </div>
-            `;
-
-            resultsScreen.innerHTML = html;
-            document.getElementById('restartBtn').addEventListener('click', restartQuiz);
+            rowDiv.appendChild(cell);
+          }
         }
+        
+        grid.appendChild(rowDiv);
+      }
+    }
 
-        function restartQuiz() {
-            currentQuestion = 0;
-            selectedOptions = [];
-            answers = [];
-            
-            document.getElementById('resultsScreen').classList.remove('active');
-            document.getElementById('welcomeScreen').classList.add('active');
-        }
+    function showHoverInfo(weekNumber) {
+      var hoverInfo = document.getElementById('hoverInfo');
+      var text = 'Week ' + (weekNumber + 1) + ': ';
+      
+      if (weekNumber < stats.weeksLived) {
+        text += 'A week from your past';
+      } else if (weekNumber === stats.weeksLived) {
+        text += 'Your current week';
+      } else {
+        text += 'A week in your potential future';
+      }
+      
+      hoverInfo.textContent = text;
+    }
 
-        document.getElementById('startBtn').addEventListener('click', startQuiz);
-        document.getElementById('nextBtn').addEventListener('click', handleNext);
-    </script>
+    function hideHoverInfo() {
+      document.getElementById('hoverInfo').textContent = '';
+    }
+
+    function renderStats() {
+      var container = document.getElementById('statsContainer');
+      
+      var html = '<div class="card">';
+      html += '<h2>Life highlights</h2>';
+      html += '<p class="stat-text">You\'ve lived <span class="stat-highlight">' + formatNumber(stats.weeksLived) + '</span> weeks, which is <span class="stat-highlight">' + stats.percentageLived + '%</span> of a full life.</p>';
+      html += '<p class="stat-text">That\'s <span class="stat-highlight">' + formatNumber(stats.daysLived) + '</span> days of experience and approximately <span class="stat-highlight">' + formatNumber(stats.seasons) + '</span> seasons observed.</p>';
+      html += '<p class="stat-text">Your heart has beaten approximately <span class="stat-highlight">' + formatNumber(stats.heartbeats) + '</span> times.</p>';
+      html += '<p class="stat-text">You\'ve taken around <span class="stat-highlight">' + formatNumber(stats.breaths) + '</span> breaths and slept about <span class="stat-highlight">' + formatNumber(stats.hoursSlept) + '</span> hours.</p>';
+      html += '</div>';
+      
+      html += '<div class="card">';
+      html += '<h2>Societal context</h2>';
+      html += '<p class="stat-text">During your lifetime, humanity\'s population has grown from <span class="stat-highlight">' + formatNumber(getPopulationAtYear(stats.birthYear)) + '</span> to over <span class="stat-highlight">8 billion</span> people.</p>';
+      html += '<p class="stat-text">The average person will meet around <span class="stat-highlight">80,000</span> people in their lifetime. You\'ve likely already met approximately <span class="stat-highlight">' + formatNumber(Math.round(80000 * (stats.percentageLived/100))) + '</span> individuals.</p>';
+      html += '<p class="stat-text">Since your birth, humanity has collectively experienced approximately <span class="stat-highlight">' + formatNumber(Math.round(stats.daysLived * 385000)) + '</span> births and <span class="stat-highlight">' + formatNumber(Math.round(stats.daysLived * 166000)) + '</span> deaths.</p>';
+      html += '</div>';
+      
+      html += '<div class="card">';
+      html += '<h2>Cosmic perspective</h2>';
+      html += '<p class="stat-text">Since your birth, Earth has traveled approximately <span class="stat-highlight">' + formatNumber(Math.round(stats.daysLived * 1.6 * 1000000)) + '</span> kilometers through space around the Sun.</p>';
+      html += '<p class="stat-text">The observable universe is about <span class="stat-highlight">93 billion</span> light-years across, meaning light takes <span class="stat-highlight">93 billion</span> years to cross it. Your entire lifespan is just <span class="stat-highlight">' + (80/13800000000 * 100).toFixed(10) + '%</span> of the universe\'s age.</p>';
+      html += '<p class="stat-text">During your lifetime, our solar system has moved about <span class="stat-highlight">' + formatNumber(Math.round(stats.daysLived * 24 * 828000)) + '</span> kilometers through the Milky Way galaxy.</p>';
+      html += '</div>';
+      
+      html += '<div class="card">';
+      html += '<h2>Natural world</h2>';
+      html += '<p class="stat-text">You\'ve experienced approximately <span class="stat-highlight">' + formatNumber(Math.round(stats.daysLived / 29.53)) + '</span> lunar cycles and <span class="stat-highlight">' + formatNumber(Math.floor(stats.daysLived / 365.25)) + '</span> trips around the Sun.</p>';
+      html += '<p class="stat-text">A giant sequoia tree can live over 3,000 years. Your current age is <span class="stat-highlight">' + ((stats.daysLived / 365.25) / 3000 * 100).toFixed(2) + '%</span> of its potential lifespan.</p>';
+      html += '<p class="stat-text">During your lifetime, your body has replaced most of its cells several times. You are not made of the same atoms you were born with.</p>';
+      html += '</div>';
+      
+      container.innerHTML = html;
+    }
+
+    function visualize() {
+      var birthdate = document.getElementById('birthdate').value;
+      if (!birthdate) return;
+      
+      stats = calculateStats(birthdate);
+      
+      document.getElementById('step1').classList.add('hidden');
+      document.getElementById('step2').classList.remove('hidden');
+      
+      renderWeekGrid();
+      renderStats();
+    }
+
+    function reset() {
+      document.getElementById('birthdate').value = '';
+      stats = null;
+      
+      document.getElementById('step1').classList.remove('hidden');
+      document.getElementById('step2').classList.add('hidden');
+    }
+  </script>
 </body>
 </html>
