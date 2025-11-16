@@ -215,26 +215,6 @@
             transform: scale(1.02);
         }
 
-        .creature {
-            position: fixed;
-            font-size: 4rem;
-            opacity: 1;
-            animation: float-up 2s ease-out forwards;
-            pointer-events: none;
-            z-index: 99999;
-        }
-
-        @keyframes float-up {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1) rotate(0deg);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-200px) scale(2) rotate(360deg);
-            }
-        }
-
         .btn-next {
             width: 100%;
             padding: 1rem;
@@ -727,27 +707,6 @@
         let currentQuestion = 0;
         let selectedOptions = [];
         let answers = [];
-        
-        const creatures = ['🐉', '🦄', '🦋', '🐲', '🦅', '🦊', '🦉', '🐺', '🦁', '🐯', '🦚', '🐝', '🦢', '🐠', '🦜'];
-
-        function createCreature(element) {
-            const creature = document.createElement('div');
-            creature.className = 'creature';
-            const randomCreature = creatures[Math.floor(Math.random() * creatures.length)];
-            creature.textContent = randomCreature;
-            
-            const rect = element.getBoundingClientRect();
-            creature.style.left = (rect.left + rect.width / 2 - 32) + 'px';
-            creature.style.top = (rect.top + rect.height / 2 - 32) + 'px';
-            
-            document.body.appendChild(creature);
-            
-            setTimeout(() => {
-                if (creature && creature.parentNode) {
-                    document.body.removeChild(creature);
-                }
-            }, 2000);
-        }
 
         const icons = {
             secure: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
@@ -808,7 +767,6 @@
             } else {
                 selectedOptions.push(index);
                 optionElements[index].classList.add('selected');
-                createCreature(optionElements[index]);
             }
             
             updateNextButton();
